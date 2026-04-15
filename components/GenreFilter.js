@@ -2,7 +2,7 @@
 
 export default function GenreFilter({ genres, selectedGenre, onSelect }) {
   return (
-    <div className="flex flex-wrap gap-2 my-4">
+    <div className="flex gap-2 my-4 overflow-x-auto whitespace-nowrap px-2 pb-2 sm:flex-wrap sm:overflow-visible sm:whitespace-normal">
       <button
         onClick={() => onSelect(null)}
         className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
@@ -13,6 +13,7 @@ export default function GenreFilter({ genres, selectedGenre, onSelect }) {
       >
         All
       </button>
+
       {genres.map((genre) => (
         <button
           key={genre.id}
@@ -29,3 +30,4 @@ export default function GenreFilter({ genres, selectedGenre, onSelect }) {
     </div>
   );
 }
+

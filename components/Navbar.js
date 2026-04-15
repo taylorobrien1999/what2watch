@@ -34,7 +34,7 @@ export default function Navbar() {
 
       {showAuth && <AuthModal onClose={() => setShowAuth(false)} />}
 
-      <nav className="bg-gray-900 text-white px-6 py-4 flex items-center justify-between">
+      <nav className="bg-gray-900 text-white px-4 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <Link href="/" className="flex items-center gap-2">
         <span className="text-4xl font-extrabold tracking-tight flex items-center">
         <span className="text-red-500 text-3xl translate-y-[1px] drop-shadow-[0_0_4px_rgba(255,0,0,0.35)]">🎬</span>

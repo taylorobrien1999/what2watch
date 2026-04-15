@@ -10,7 +10,7 @@ export default function SearchBar({ onSearch }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex gap-2 w-full max-w-2xl mx-auto">
+    <form onSubmit={handleSubmit} className="flex gap-2 w-full max-w-2xl mx-auto sm:w-auto">
       <input
         type="text"
         value={query}

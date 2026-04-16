@@ -17,7 +17,7 @@ export default function SearchBar({ onSearch }) {
     const delay = setTimeout(async () => {
       try {
         const res = await fetch(
-          `https://api.themoviedb.org/3/search/movie?api_key=${process.env.NEXT_PUBLIC_TMDB_KEY}&query=${query}`
+          `https://api.themoviedb.org/3/search/movie?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&query=${query}`
         );
         const data = await res.json();
         const list = data.results?.slice(0, 6) || [];

@@ -4,6 +4,7 @@ import Navbar from "@/components/Navbar";
 import MovieCard from "@/components/MovieCard";
 import GenreFilter from "@/components/GenreFilter";
 import SearchBar from "@/components/SearchBar";
+// import MovieDetailModal from "@/components/MovieDetailModal";
 import {
   getTrending,
   getGenres,
@@ -17,6 +18,8 @@ export default function Home() {
   const [selectedGenre, setSelectedGenre] = useState(null);
   const [loading, setLoading] = useState(true);
   const [heading, setHeading] = useState("Trending This Week");
+
+  const [selectedMovie, setSelectedMovie] = useState(null);
 
   useEffect(() => {
     async function loadInitial() {
@@ -85,10 +88,23 @@ export default function Home() {
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
             {movies.map((movie) => (
-              <MovieCard key={movie.id} movie={movie} />
+              <MovieCard
+                key={movie.id}
+                movie={movie}
+                onSelect={(m) => setSelectedMovie(m.id)}
+              />
             ))}
           </div>
         )}
+
+        {/*
+        {selectedMovie && (
+          <MovieDetailModal
+            movieId={selectedMovie}
+            onClose={() => setSelectedMovie(null)}
+          />
+        )}
+        */}
       </main>
     </div>
   );

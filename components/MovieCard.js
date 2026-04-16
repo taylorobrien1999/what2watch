@@ -2,7 +2,7 @@
 import Image from "next/image";
 import { getPosterUrl } from "@/lib/tmdb";
 
-export default function MovieCard({ movie }) {
+export default function MovieCard({ movie, onSelect }) {
   const posterUrl = getPosterUrl(movie.poster_path);
 
   return (
@@ -15,6 +15,9 @@ export default function MovieCard({ movie }) {
             fill
             className="object-cover"
             sizes="(max-width: 768px) 50vw, 20vw"
+            onClick={() => onSelect(movie)}
+            className="cursor-pointer"
+
           />
         ) : (
           <div className="w-full h-full bg-gray-700 flex items-center justify-center">

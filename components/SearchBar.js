@@ -5,10 +5,9 @@ export default function SearchBar({ onSearch }) {
   const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [activeIndex, setActiveIndex] = useState(-1);
-  const [showDropdown, setShowDropdown] = useState(false); // Toggle for visibility
+  const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef(null);
 
-// closes dropdown for UI when clicking outside
   useEffect(() => {
     function handleClickOutside(event) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -19,7 +18,6 @@ export default function SearchBar({ onSearch }) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Debounced autocomplete fetch
   useEffect(() => {
     if (!query.trim()) {
       setSuggestions([]);
@@ -58,20 +56,38 @@ export default function SearchBar({ onSearch }) {
     setShowDropdown(false);
   }
 
+  // clears search bar
+  function handleClear() {
+    setQuery("");
+    setSuggestions([]);
+    setShowDropdown(false);
+  }
+
   return (
     <div className="relative w-full max-w-2xl mx-auto sm:w-auto" ref={dropdownRef}>
-      <form onSubmit={handleSubmit} className="flex gap-2 w-full">
-        <input
-          type="text"
-          value={query}
-          onFocus={() => query.trim() && setShowDropdown(true)}
-          onChange={(e) => {
-            setQuery(e.target.value);
-            setActiveIndex(-1);
-          }}
-          placeholder="Search movies, actors, genres..."
-          className="flex-1 px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-500 text-white bg-gray-800"
-        />
+      <form onSubmit={handleSubmit} className="flex gap-2 w-full relative">
+        <div className="relative flex-1">
+          <input
+            type="text"
+            value={query}
+            onFocus={() => query.trim() && setShowDropdown(true)}
+            onChange={(e) => {
+              setQuery(e.target.value);
+              setActiveIndex(-1);
+            }}
+            placeholder="Search movies, actors, genres..."
+            className="w-full px-4 py-2 pr-10 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-500 text-white bg-gray-800"
+          />
+          {query && (
+            <button
+              type="button"
+              onClick={handleClear}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white text-xl font-bold"
+            >
+              ✕
+            </button>
+          )}
+        </div>
         <button
           type="submit"
           className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg font-medium transition-colors"
@@ -80,7 +96,6 @@ export default function SearchBar({ onSearch }) {
         </button>
       </form>
 
-      {/* Autocomplete dropdown */}
       {showDropdown && suggestions.length > 0 && (
         <div className="absolute left-0 right-0 mt-2 bg-gray-900 border border-gray-700 rounded-lg shadow-lg z-50">
           {suggestions.map((item, i) => (

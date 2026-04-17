@@ -75,7 +75,8 @@ export default function WatchlistPage() {
           <h1 className="text-3xl font-bold text-gray-900 mb-6">My Watchlist</h1>
 
           <section className="mb-8">
-            <h2 className="text-xl font-semibold mb-4">Want to Watch</h2>
+            {/* Darker text for mobile readability */}
+            <h2 className="text-xl font-bold text-gray-900 mb-4">Want to Watch</h2>
             {loading ? (
               <p className="text-gray-600">Loading...</p>
             ) : wantList.length === 0 ? (
@@ -93,7 +94,8 @@ export default function WatchlistPage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold mb-4">Watched</h2>
+            {/* Darker text for mobile readability */}
+            <h2 className="text-xl font-bold text-gray-900 mb-4">Watched</h2>
             {loading ? (
               <p className="text-gray-600">Loading...</p>
             ) : watchedList.length === 0 ? (

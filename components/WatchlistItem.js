@@ -87,23 +87,24 @@ export default function WatchlistItem({ item }) {
   }
 
   return (
-    <div className="flex items-start gap-4 bg-white p-4 rounded-lg shadow">
+    <div className="flex items-start gap-4 bg-white p-4 rounded-lg shadow border border-gray-200">
       <img
         src={`https://image.tmdb.org/t/p/w200${item.posterPath}`}
-        className="w-20 rounded"
+        className="w-20 rounded shadow-sm"
         alt={item.title}
       />
       <div className="flex-1">
-        <h3 className="font-bold">{item.title}</h3>
-        <p className="text-gray-600">{item.year}</p>
+        {/* Darker titles for better mobile readability */}
+        <h3 className="font-bold text-gray-900 text-lg leading-tight">{item.title}</h3>
+        <p className="text-gray-800 font-medium">{item.year}</p>
 
         <button
           onClick={handleToggle}
           disabled={toggleBusy}
-          className={`mt-2 px-3 py-1 rounded text-white text-sm ${
+          className={`mt-2 px-4 py-1.5 rounded text-white text-sm font-semibold transition-all ${
             toggleBusy
               ? "bg-gray-400 cursor-not-allowed"
-              : "bg-blue-600 hover:bg-blue-700"
+              : "bg-blue-600 hover:bg-blue-700 shadow-sm active:scale-95"
           }`}
         >
           {toggleBusy
@@ -113,18 +114,18 @@ export default function WatchlistItem({ item }) {
             : "Move to Want to Watch"}
         </button>
 
-        {/* Rating and Review section - only for watched */}
+        {/* Rating and Review section */}
         {item.status === "watched" && (
-          <div className="mt-4 border-t pt-2">
-            <strong>Your Rating:</strong>
+          <div className="mt-4 border-t border-gray-100 pt-3">
+            <strong className="text-gray-900">Your Rating:</strong>
             <div className="flex gap-1 mt-1">
               {[1, 2, 3, 4, 5].map((star) => (
                 <span
                   key={star}
                   onClick={() => !rateBusy && handleRate(star)}
-                  className={`text-xl transition-colors ${
+                  className={`text-2xl transition-colors ${
                     rateBusy ? "cursor-not-allowed opacity-50" : "cursor-pointer"
-                  } ${(item.rating || 0) >= star ? "text-yellow-500" : "text-gray-400"}`}
+                  } ${(item.rating || 0) >= star ? "text-yellow-500" : "text-gray-300"}`}
                 >
                   ★
                 </span>
@@ -136,13 +137,13 @@ export default function WatchlistItem({ item }) {
                 value={reviewText}
                 onChange={(e) => setReviewText(e.target.value)}
                 placeholder="Write a quick review..."
-                className="w-full text-sm p-2 border rounded bg-gray-50 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                className="w-full text-base p-2 border border-gray-300 rounded bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 rows="2"
               />
               <button
                 onClick={handleSaveReview}
                 disabled={reviewBusy}
-                className="mt-1 text-xs text-blue-600 hover:underline"
+                className="mt-2 text-sm font-bold text-blue-700 hover:text-blue-900 underline"
               >
                 {reviewBusy ? "Saving..." : "Save Review"}
               </button>
@@ -151,7 +152,7 @@ export default function WatchlistItem({ item }) {
         )}
 
         {msg && (
-          <div className="text-sm text-green-700 bg-green-50 border border-green-200 px-2 py-1 rounded mt-2 inline-block">
+          <div className="text-sm font-semibold text-green-800 bg-green-100 border border-green-300 px-3 py-1 rounded mt-3 inline-block">
             {msg}
           </div>
         )}
@@ -160,7 +161,7 @@ export default function WatchlistItem({ item }) {
       <button
         onClick={handleRemove}
         disabled={removeBusy}
-        className={`text-red-600 font-bold text-xl transition-opacity ${
+        className={`text-red-600 font-bold text-2xl p-1 transition-opacity ${
           removeBusy ? "opacity-40 cursor-not-allowed" : "hover:text-red-800"
         }`}
         title="Remove from watchlist"

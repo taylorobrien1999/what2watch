@@ -64,7 +64,6 @@ export default function MovieCard({ movie, onSelect, watchlistIds = new Set() })
                 const ok = await addToWatchlist(user.uid, movie);
                 if (ok) {
                   const el = e.currentTarget;
-                  el.innerText = "Added ✓";
                   setTimeout(() => {
                     if (el) el.innerText = "+ Add to Watchlist";
                   }, 1000);

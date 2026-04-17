@@ -2,40 +2,115 @@
 import { useEffect, useState } from "react";
 import { auth, db } from "@/lib/firebase";
 import { collection, query, where, onSnapshot } from "firebase/firestore";
+import { onAuthStateChanged } from "firebase/auth";
 import WatchlistItem from "@/components/WatchlistItem";
+import Navbar from "@/components/Navbar";
 
 export default function WatchlistPage() {
   const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [authChecked, setAuthChecked] = useState(false);
 
   useEffect(() => {
-    if (!auth.currentUser) return;
+    let unsubSnapshot = null;
 
-    const q = query(
-      collection(db, "watchlist"),
-      where("userId", "==", auth.currentUser.uid)
-    );
+    const unsubAuth = onAuthStateChanged(auth, (user) => {
+      setAuthChecked(true);
 
-    const unsub = onSnapshot(q, (snapshot) => {
-      const list = snapshot.docs.map((doc) => doc.data());
-      setItems(list);
+      if (unsubSnapshot) {
+        unsubSnapshot();
+        unsubSnapshot = null;
+      }
+
+      if (!user) {
+        setItems([]);
+        setLoading(false);
+        return;
+      }
+
+      setLoading(true);
+      const q = query(
+        collection(db, "watchlist"),
+        where("userId", "==", user.uid)
+      );
+
+      unsubSnapshot = onSnapshot(
+        q,
+        (snapshot) => {
+          const list = snapshot.docs.map((doc) => doc.data());
+          setItems(list);
+          setLoading(false);
+        },
+        (err) => {
+          console.error("watchlist onSnapshot error:", err);
+          setItems([]);
+          setLoading(false);
+        }
+      );
     });
 
-    return () => unsub();
+    return () => {
+      if (unsubSnapshot) unsubSnapshot();
+      unsubAuth();
+    };
   }, []);
 
-  return (
-    <div className="max-w-4xl mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-6">My Watchlist</h1>
+  const wantList = items.filter((i) => i.status === "want");
+  const watchedList = items.filter((i) => i.status === "watched");
 
-      {items.length === 0 ? (
-        <p className="text-gray-600">Your watchlist is empty.</p>
-      ) : (
-        <div className="flex flex-col gap-4">
-          {items.map((item) => (
-            <WatchlistItem key={item.movieId} item={item} />
-          ))}
+  if (!authChecked) {
+    return (
+      <div className="min-h-screen bg-gray-100">
+        <Navbar />
+        <div className="text-center py-20 text-gray-500">Loading...</div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-100">
+      <Navbar />
+      <div className="py-10 px-6">
+        <div className="max-w-4xl mx-auto">
+          <h1 className="text-3xl font-bold text-gray-900 mb-6">My Watchlist</h1>
+
+          <section className="mb-8">
+            <h2 className="text-xl font-semibold mb-4">Want to Watch</h2>
+            {loading ? (
+              <p className="text-gray-600">Loading...</p>
+            ) : wantList.length === 0 ? (
+              <p className="text-gray-600">No items in Want to Watch.</p>
+            ) : (
+              <div className="flex flex-col gap-4">
+                {wantList.map((item) => (
+                  <WatchlistItem
+                    key={item.movieId + "_want"}
+                    item={item}
+                  />
+                ))}
+              </div>
+            )}
+          </section>
+
+          <section>
+            <h2 className="text-xl font-semibold mb-4">Watched</h2>
+            {loading ? (
+              <p className="text-gray-600">Loading...</p>
+            ) : watchedList.length === 0 ? (
+              <p className="text-gray-600">No watched items yet.</p>
+            ) : (
+              <div className="flex flex-col gap-4">
+                {watchedList.map((item) => (
+                  <WatchlistItem
+                    key={item.movieId + "_watched"}
+                    item={item}
+                  />
+                ))}
+              </div>
+            )}
+          </section>
         </div>
-      )}
+      </div>
     </div>
   );
 }

@@ -8,7 +8,7 @@ import { auth } from "@/lib/firebase";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import AuthModal from "./AuthModal";
 
-export default function Navbar() {
+export default function Navbar({ onHomeClick }) {
   const [user, setUser] = useState(null);
   const [toast, setToast] = useState("");
   const [showAuth, setShowAuth] = useState(false);
@@ -35,19 +35,20 @@ export default function Navbar() {
       {showAuth && <AuthModal onClose={() => setShowAuth(false)} />}
 
       <nav className="bg-gray-900 text-white px-4 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <Link href="/" className="flex items-center gap-2">
-        <span className="text-4xl font-extrabold tracking-tight flex items-center">
-        <span className="text-red-500 text-3xl translate-y-[1px] drop-shadow-[0_0_4px_rgba(255,0,0,0.35)]">🎬</span>
-        <span className="text-white ml-1">What</span>
-        <span className="text-red-500 drop-shadow-[0_0_4px_rgba(255,0,0,0.35)]">2</span>
-        <span className="text-white">Watch</span>
-        </span>
-      </Link>
 
-
+        <div onClick={onHomeClick} className="cursor-pointer">
+          <Link href="/" className="flex items-center gap-2">
+            <span className="text-4xl font-extrabold tracking-tight flex items-center">
+              <span className="text-red-500 text-3xl translate-y-[1px] drop-shadow-[0_0_4px_rgba(255,0,0,0.35)]">🎬</span>
+              <span className="text-white ml-1">What</span>
+              <span className="text-red-500 drop-shadow-[0_0_4px_rgba(255,0,0,0.35)]">2</span>
+              <span className="text-white">Watch</span>
+            </span>
+          </Link>
+        </div>
 
         <div className="flex items-center gap-6">
-          <Link href="/" className="hover:text-red-400 transition-colors">
+          <Link href="/" onClick={onHomeClick} className="hover:text-red-400 transition-colors">
             Home
           </Link>
 

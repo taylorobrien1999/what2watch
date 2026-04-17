@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { toggleStatus, removeFromWatchlist, setRating } from "@/lib/firebase";
+import { toggleStatus, removeFromWatchlist, setRating, setReview } from "@/lib/firebase";
 import { auth } from "@/lib/firebase";
 import { onAuthStateChanged } from "firebase/auth";
 
@@ -9,6 +9,8 @@ export default function WatchlistItem({ item }) {
   const [toggleBusy, setToggleBusy] = useState(false);
   const [removeBusy, setRemoveBusy] = useState(false);
   const [rateBusy, setRateBusy] = useState(false);
+  const [reviewText, setReviewText] = useState(item.review || "");
+  const [reviewBusy, setReviewBusy] = useState(false);
   const [msg, setMsg] = useState("");
 
   useEffect(() => {
@@ -71,8 +73,21 @@ export default function WatchlistItem({ item }) {
     }
   }
 
+  async function handleSaveReview() {
+    if (!user || reviewBusy) return;
+    try {
+      setReviewBusy(true);
+      const ok = await setReview(user.uid, item.movieId, reviewText);
+      if (ok) flash("Review saved ✓");
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setReviewBusy(false);
+    }
+  }
+
   return (
-    <div className="flex items-center gap-4 bg-white p-4 rounded-lg shadow">
+    <div className="flex items-start gap-4 bg-white p-4 rounded-lg shadow">
       <img
         src={`https://image.tmdb.org/t/p/w200${item.posterPath}`}
         className="w-20 rounded"
@@ -98,27 +113,42 @@ export default function WatchlistItem({ item }) {
             : "Move to Want to Watch"}
         </button>
 
-        <div className="mt-2">
-          <strong>Your Rating:</strong>
-          <div className="flex gap-1 mt-1">
-            {[1, 2, 3, 4, 5].map((star) => (
-              <span
-                key={star}
-                onClick={() => !rateBusy && handleRate(star)}
-                className={`text-xl transition-colors ${
-                  rateBusy
-                    ? "cursor-not-allowed opacity-50"
-                    : "cursor-pointer"
-                } ${(item.rating || 0) >= star ? "text-yellow-500" : "text-gray-400"}`}
+        {/* Rating and Review section - only for watched */}
+        {item.status === "watched" && (
+          <div className="mt-4 border-t pt-2">
+            <strong>Your Rating:</strong>
+            <div className="flex gap-1 mt-1">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <span
+                  key={star}
+                  onClick={() => !rateBusy && handleRate(star)}
+                  className={`text-xl transition-colors ${
+                    rateBusy ? "cursor-not-allowed opacity-50" : "cursor-pointer"
+                  } ${(item.rating || 0) >= star ? "text-yellow-500" : "text-gray-400"}`}
+                >
+                  ★
+                </span>
+              ))}
+            </div>
+
+            <div className="mt-3">
+              <textarea
+                value={reviewText}
+                onChange={(e) => setReviewText(e.target.value)}
+                placeholder="Write a quick review..."
+                className="w-full text-sm p-2 border rounded bg-gray-50 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                rows="2"
+              />
+              <button
+                onClick={handleSaveReview}
+                disabled={reviewBusy}
+                className="mt-1 text-xs text-blue-600 hover:underline"
               >
-                ★
-              </span>
-            ))}
-            {rateBusy && (
-              <span className="text-xs text-gray-500 self-center ml-1">Saving...</span>
-            )}
+                {reviewBusy ? "Saving..." : "Save Review"}
+              </button>
+            </div>
           </div>
-        </div>
+        )}
 
         {msg && (
           <div className="text-sm text-green-700 bg-green-50 border border-green-200 px-2 py-1 rounded mt-2 inline-block">

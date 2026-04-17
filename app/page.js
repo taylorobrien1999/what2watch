@@ -24,16 +24,20 @@ export default function Home() {
   const [selectedMovie, setSelectedMovie] = useState(null);
   const [watchlistIds, setWatchlistIds] = useState(new Set());
 
+  async function loadInitial() {
+    setLoading(true);
+    const [trending, genreList] = await Promise.all([
+      getTrending(),
+      getGenres(),
+    ]);
+    setMovies(trending);
+    setGenres(genreList);
+    setHeading("Trending This Week");
+    setSelectedGenre(null);
+    setLoading(false);
+  }
+
   useEffect(() => {
-    async function loadInitial() {
-      const [trending, genreList] = await Promise.all([
-        getTrending(),
-        getGenres(),
-      ]);
-      setMovies(trending);
-      setGenres(genreList);
-      setLoading(false);
-    }
     loadInitial();
   }, []);
 
@@ -76,9 +80,7 @@ export default function Home() {
     setSelectedGenre(genreId);
     setLoading(true);
     if (genreId === null) {
-      const trending = await getTrending();
-      setMovies(trending);
-      setHeading("Trending This Week");
+      await loadInitial();
     } else {
       const results = await getMoviesByGenre(genreId);
       setMovies(results);
@@ -99,7 +101,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      <Navbar />
+      <Navbar onHomeClick={loadInitial} />
 
       <div className="bg-gray-900 py-8 px-6">
         <h1 className="text-white text-center text-2xl font-bold mb-4">
@@ -145,4 +147,3 @@ export default function Home() {
     </div>
   );
 }
-
